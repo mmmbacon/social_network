@@ -31,6 +31,26 @@ const data = {
   }
 };
 
+const getName = function(data, id) {
+  return data[id].name;
+};
+
+const getFollows = function(data, id) {
+  return data[id].follows;
+};
+
+const doesFollow = function(data, id1, id2) {
+
+  //Iterate through player follows list
+  for (const user of data[id1].follows) {
+    //If follows list contains player with id2, return true
+    if (user === id2) {
+      return true;
+    }
+  }
+
+  return false;
+};
 
 const biggestFollower = function(data) {
   //returns the name of the individual who follows the most people.
@@ -49,53 +69,55 @@ const biggestFollower = function(data) {
 
 };
 
+//returns the name of the most popular (most followed) individual, or an array of users if there are multiple matching records
 const mostPopular = function(data) {
-  //returns the name of the most popular (most followed) individual.
   
-  let userWithMostFollowers = "";
+  let usersWithMostFollowers = [];
   let followsList = [];
   const followersRecord = {};
 
-  for (const key of Object.keys(data)) {
-    followsList = data[key].follows;
-  }
-
-  for (const user of followsList) {
-    if (!followersRecord[user]) {
-      followersRecord[user] = 1;
-    } else {
-      followersRecord[user] += 1;
+  //Create a summarized list of all users being followed
+  for (const key1 of Object.keys(data)) {
+    for (const id of data[key1].follows) {
+      followsList.push(id);
     }
   }
 
+  //Iterate through this list and create a new user object that summarizes the amount of follows for each person
+  for (const id of followsList) {
+    if (!followersRecord[id]) {
+      followersRecord[id] = 1;
+    } else {
+      followersRecord[id] += 1;
+    }
+  }
+
+  //Compare against each other for the highest follower count
+  //First: Compare each user against each other for greatest amount of followers and then record the largest
   let highestFollowerCount = 0;
-  for (const key in Object.keys(followersRecord)) {
+  for (const key of Object.keys(followersRecord)) {
     if (followersRecord[key] > highestFollowerCount) {
       highestFollowerCount = followersRecord[key];
-      userWithMostFollowers = getName(data, key);
+    }
+  }
+  //Second: Compare against the largest follower count and build an array of users
+  for (const key of Object.keys(followersRecord)) {
+    if (followersRecord[key] >= highestFollowerCount) {
+      usersWithMostFollowers.push(
+        { name: getName(data, key),
+          followers: followersRecord[key]
+        }
+      );
     }
   }
 
-  return userWithMostFollowers;
-};
-
-const getName = function(data, id) {
-  return data[id].name;
-};
-
-const getFollows = function(data, id) {
-  return data[id].follows;
-};
-
-const doesFollow = function(data, id1, id2) {
-
-  for (const user of data[id1].follows) {
-    if (user === id2) {
-      return true;
-    }
+  //Return the first user in the record if there is only one user with the most followers
+  if (usersWithMostFollowers.length === 1) {
+    return usersWithMostFollowers[0];
   }
 
-  return false;
+  return usersWithMostFollowers;
+  
 };
 
 const printAll = function(data) {
