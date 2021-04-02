@@ -85,12 +85,48 @@ const mostPopular = function(data) {
   return userWithMostFollowers;
 };
 
-const printAll = function() {
+const getName = function(data, id) {
+  for (const key of Object.keys(data)) {
+    if (key === id) {
+      return data[key].name;
+    }
+  }
+};
+
+const printAll = function(data) {
   //outputs a list of everyone and for each of them, the names of who they follow and who follows them.
+  let users = {};
+
+  //Iterate through all users
+  for (const key1 of Object.keys(data)) {
+    users[key1] = {
+      name: data[key1].name,
+      follows: data[key1].follows,
+      followers: []
+    };
+
+    //Iterate through all users
+    for (const key2 of Object.keys(data)) {
+      //For each user, get follows
+      for (const follower of data[key2].follows) {
+        if (follower === key1) {
+          users[key1].followers.push(getName(key2));
+        }
+      }
+    }
+  }
+  
+  //Compare against user list for names based on the key
+  //Store each follower in the new list
+  //Get Names of followers
+
+  return users;
 };
 
 const unrequitedFollowers = function() {
   //returns a list of names for those who follow someone that doesn't follow them back.
 };
 
-console.log(biggestFollower(data));
+console.log("Biggest Follower: ", biggestFollower(data));
+console.log("Most Popular: ", mostPopular(data));
+console.log("Print All: ", printAll(data));
